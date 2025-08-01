@@ -94,7 +94,9 @@ brick-breaker-ruby/
 - **Brick Effects**: Red flash (`#f03444`) when bricks are hit
 - **Button States**: Gradient backgrounds for purchasable upgrades
 
-## Bazaar System (Spoiler) <details><summary>click to expand</summary>
+## Bazaar System (Spoiler) 
+
+<details><summary>click to expand</summary>
 
 The game features an advanced upgrade shop system with progression-based unlocks:
 
