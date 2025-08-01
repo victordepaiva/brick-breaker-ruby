@@ -12,19 +12,25 @@
     <div class="game-wrapper">
       <div id="debugElement">
         <div id="debugHeader">Debug Panel</div>
-        <div id="debugContent">
-          <div id="debugWins">Wins: 0</div>
-          <div id="debugTimesPlayed">Times Played: 0</div>
-          <div id="debugButtons">
+                                           <div id="debugContent">
+                                          <div id="debugWins">Wins: 0</div>
+                     <div id="debugTimesPlayed">Times Played: 0</div>
+                     <div id="debugActiveBalls">Active Balls: 1</div>
+                     <div id="debugBazaarTip">Bazaar Tip: False</div>
+                     <div id="debugSeparator"></div>
+                     <div id="debugButtons">
             <button id="clearRecordBtn">Clear Record</button>
             <button id="forceWinBtn">Force Win</button>
             <button id="resetWinCountBtn">Reset Win Count</button>
+            <button id="resetBBCountBtn">Reset BB Count</button>
+            <button id="add1000BBBtn">+ 1000 BB</button>
+            <button id="clearUpgradesBtn">Clear Upgrades</button>
           </div>
         </div>
       </div>
-      <div id="gameContainer">
-               <canvas id="gameCanvas" width="960" height="640"></canvas>
-    
+            <div id="gameContainer">
+        <canvas id="gameCanvas" width="960" height="640"></canvas>
+
         <div id="overlay" style="display: none;">
           <h1 id="message">You lost!</h1>
           <p id="finalScore"></p>
@@ -36,8 +42,19 @@
         </div>
 
       </div>
-      
+      <div id="bazaarElement">
+        <div id="bazaarHeader">Bazaar</div>
+                                            <div id="bazaarContent">
+                                            <button id="viewBalanceBtn" style="display: none;">View Balance (75 BB)</button>
+                     <button id="highScoreBtn" style="display: none;">High Score (120 BB)</button>
+                                            <button id="extraBallBtn" style="display: none;">Extra Ball (1000 BB)</button>
+                     <div id="bazaarSeparator" style="display: none;"></div>
+                     <div id="bazaarBalls">Balls: 1</div>
+                     <div id="bazaarBlocksBroken" style="display: none;">Blocks Broken:<br>0</div>
+                   </div>
+      </div>
       <button id="startBtn">Start Game</button>
+      <div id="bazaarHint" style="display: none;">press E to peruse</div>
     </div>
   
     <script src="game.js"></script>

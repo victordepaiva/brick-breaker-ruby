@@ -25,11 +25,20 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // ⚽ Ball Properties
-let x = canvas.width / 2;     // Ball's current X position (starts in center)
-let y = canvas.height - 50;   // Ball's current Y position (starts just above paddle)
-let dx = 1.5;                 // Ball's horizontal speed (positive = moving right)
-let dy = -1.5;                // Ball's vertical speed (negative = moving up)
 const ballRadius = 8;         // Size of the ball in pixels (further scaled down)
+
+// 🎾 Ball Object Constructor
+function createBall() {
+  return {
+    x: canvas.width / 2,
+    y: canvas.height - 50,
+    dx: 1.5,
+    dy: -1.5
+  };
+}
+
+// Initialize balls array (will be populated after upgrades are loaded)
+let activeBalls = [];
 
 // 🚀 Dynamic Speed System
 const baseSpeed = 1.5;        // Starting speed for both dx and dy
@@ -73,6 +82,14 @@ let score = 0;                // Player's current score (increases when bricks a
 let record = 0;               // Highest score achieved (stored in localStorage)
 let timesPlayed = 0;          // Number of times the game has been played
 let wins = 0;                 // Number of times the player has won
+let blocksBroken = 0;         // Total blocks broken across all games
+let bazaarUnlocked = false;   // Whether the bazaar has been unlocked (record >= 50)
+
+// 🎾 Ball Management System
+let ballCount = 1;            // Number of balls the player has (starts at 1)
+let ballsLost = 0;           // Number of balls lost in current game
+let highScoreUnlocked = false; // Whether the high score display is unlocked
+let viewBalanceUnlocked = false; // Whether the blocks broken counter is visible
 
 // 🎮 Event Listeners - Listen for keyboard input to control the paddle
 document.addEventListener("keydown", keyDownHandler);
@@ -107,20 +124,22 @@ function keyUpHandler(e) {
  * Includes dynamic speed increase system
  */
 function collisionDetection() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      const b = bricks[c][r];
-      if (b.status === 1) {
-        if (
-          x > b.x &&
-          x < b.x + brickWidth &&
-          y > b.y &&
-          y < b.y + brickHeight
-                 ) {
-           dy = -dy;
-           b.status = 2; // Set to blinking state
-           b.blinkFrames = 0; // Start frame counter
-                      score++;
+  for (let ball of activeBalls) {
+    for (let c = 0; c < brickColumnCount; c++) {
+      for (let r = 0; r < brickRowCount; r++) {
+        const b = bricks[c][r];
+        if (b.status === 1) {
+          if (
+            ball.x > b.x &&
+            ball.x < b.x + brickWidth &&
+            ball.y > b.y &&
+            ball.y < b.y + brickHeight
+                   ) {
+                     ball.dy = -ball.dy;
+            b.status = 2; // Set to blinking state
+            b.blinkFrames = 0; // Start frame counter
+            score++;
+            incrementBlocksBroken(); // Increment total blocks broken counter
            
            // 🏆 Update record if this is the first score or a new high score
            if (score === 1 || score > record) {
@@ -133,15 +152,18 @@ function collisionDetection() {
              const speedMultiplier = Math.floor(score / speedIncreaseInterval) * speedIncrease;
              const newSpeed = baseSpeed + speedMultiplier;
              
-             // Preserve direction while updating speed
-             dx = dx > 0 ? newSpeed : -newSpeed;
-             dy = dy > 0 ? newSpeed : -newSpeed;
+             // Preserve direction while updating speed for all balls
+             for (let activeBall of activeBalls) {
+               activeBall.dx = activeBall.dx > 0 ? newSpeed : -newSpeed;
+               activeBall.dy = activeBall.dy > 0 ? newSpeed : -newSpeed;
+             }
            }
           
                      if (score === brickRowCount * brickColumnCount) {
              incrementWins(); // Increment win counter when player wins
              showOverlay("You win!", score);
            }
+          }
         }
       }
     }
@@ -149,16 +171,18 @@ function collisionDetection() {
 }
 
 /**
- * 🔴 Draws the ball on the canvas
- * Creates a light gray circle at the current ball position (x, y)
+ * 🔴 Draws all balls on the canvas
+ * Creates light gray circles for each active ball
  * The ball radius is defined by the ballRadius constant
  */
-function drawBall() {
-  ctx.beginPath();
-  ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-  ctx.fillStyle = "#F2F2F2";
-  ctx.fill();
-  ctx.closePath();
+function drawBalls() {
+  for (let ball of activeBalls) {
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = "#F2F2F2";
+    ctx.fill();
+    ctx.closePath();
+  }
 }
 
 /**
@@ -234,11 +258,11 @@ function drawScore() {
 
 /**
  * 🏆 Draws the record score in the top-right corner
- * Only displays if the player has achieved a score > 0
+ * Only displays if the player has unlocked the high score feature and achieved a score > 0
  * Shows "Record: X" in white text
  */
 function drawRecord() {
-  if (record > 0) {
+  if (highScoreUnlocked && record > 0) {
     ctx.font = "bold 16px 'Work Sans'";
     ctx.fillStyle = "#fff";
     const recordText = "Record: " + record;
@@ -272,6 +296,67 @@ function updatePlayCounter() {
 }
 
 /**
+ * 🎾 Updates the debug active balls counter in the HTML element
+ * Shows "Active Balls: X" in the debug element
+ */
+function updateActiveBallsCounter() {
+  const debugActiveBallsElement = document.getElementById("debugActiveBalls");
+  if (debugActiveBallsElement) {
+    debugActiveBallsElement.textContent = "Active Balls: " + activeBalls.length;
+  }
+}
+
+/**
+ * 🏪 Updates the debug bazaar tip indicator in the HTML element
+ * Shows "Bazaar Tip: True/False" in the debug element
+ */
+function updateBazaarTipIndicator() {
+  const debugBazaarTipElement = document.getElementById("debugBazaarTip");
+  if (debugBazaarTipElement) {
+    debugBazaarTipElement.textContent = "Bazaar Tip: " + bazaarUnlocked;
+  }
+}
+
+/**
+ * 🎾 Updates the bazaar balls counter in the HTML element
+ * Shows "Balls: X" in the bazaar element
+ * Only visible after the player has purchased their first extra ball
+ */
+function updateBazaarBallsCounter() {
+  const bazaarBallsElement = document.getElementById("bazaarBalls");
+  if (bazaarBallsElement) {
+    if (ballCount > 1) {
+      bazaarBallsElement.style.display = 'block';
+      bazaarBallsElement.textContent = "Balls: " + ballCount;
+    } else {
+      bazaarBallsElement.style.display = 'none';
+    }
+  }
+  updateBazaarSeparator();
+}
+
+/**
+ * 📏 Updates the bazaar separator visibility
+ * Shows separator only when both Extra Ball button and Balls counter are visible
+ */
+function updateBazaarSeparator() {
+  const separatorElement = document.getElementById("bazaarSeparator");
+  const extraBallBtn = document.getElementById("extraBallBtn");
+  const bazaarBallsElement = document.getElementById("bazaarBalls");
+  
+  if (separatorElement && extraBallBtn && bazaarBallsElement) {
+    const buttonVisible = extraBallBtn.style.display !== 'none';
+    const ballsVisible = bazaarBallsElement.style.display !== 'none';
+    
+    if (buttonVisible && ballsVisible) {
+      separatorElement.style.display = 'block';
+    } else {
+      separatorElement.style.display = 'none';
+    }
+  }
+}
+
+/**
  * 🎨 Main game loop function - handles all game rendering and logic
  * This function runs continuously during gameplay using requestAnimationFrame
  * Responsibilities:
@@ -284,25 +369,38 @@ function updatePlayCounter() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBricks();
-  drawBall();
+  drawBalls();
   drawPaddle();
   drawScore();
   drawRecord();
   collisionDetection();
 
-  // Ball movement
-  x += dx;
-  y += dy;
+  // Ball movement and collision detection
+  for (let i = activeBalls.length - 1; i >= 0; i--) {
+    const ball = activeBalls[i];
+    
+    // Ball movement
+    ball.x += ball.dx;
+    ball.y += ball.dy;
 
-  // Bounce off walls
-  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) dx = -dx;
-  if (y + dy < ballRadius) dy = -dy;
-  else if (y + dy > canvas.height - ballRadius) {
-    if (x > paddleX && x < paddleX + paddleWidth) {
-      dy = -dy;
-    } else {
-        showOverlay("You lost!", score);
+    // Bounce off walls
+    if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) ball.dx = -ball.dx;
+    if (ball.y + ball.dy < ballRadius) ball.dy = -ball.dy;
+    else if (ball.y + ball.dy > canvas.height - ballRadius) {
+      if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
+        ball.dy = -ball.dy;
+      } else {
+        // Ball lost - remove it from active balls
+        activeBalls.splice(i, 1);
+        ballsLost++;
+        updateActiveBallsCounter();
+        
+        // Check if all balls are lost
+        if (activeBalls.length === 0) {
+          showOverlay("You lost!", score);
+        }
       }
+    }
   }
 
   // Paddle movement
@@ -324,7 +422,7 @@ function draw() {
 function initialRender() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBricks();
-  drawBall();
+  drawBalls();
   drawPaddle();
   drawScore();
   drawRecord();
@@ -340,6 +438,7 @@ function updateRecord() {
   if (score > record) {
     record = score;
     localStorage.setItem('brickBreakerRecord', record.toString());
+    checkBazaarUnlock();
   }
 }
 
@@ -367,12 +466,260 @@ function incrementWins() {
   updateWinCounter();
 }
 
-// Load record, play counter, and wins on game start
+// 🧱 Blocks Broken Counter Management
+function loadBlocksBroken() {
+  const savedBlocksBroken = localStorage.getItem('brickBreakerBlocksBroken');
+  blocksBroken = savedBlocksBroken ? parseInt(savedBlocksBroken) : 0;
+}
+
+function incrementBlocksBroken() {
+  blocksBroken++;
+  localStorage.setItem('brickBreakerBlocksBroken', blocksBroken.toString());
+  updateBlocksBrokenCounter();
+  updateViewBalanceButton();
+  updateHighScoreButton();
+  updateExtraBallButton();
+  checkBazaarUnlock();
+}
+
+function updateBlocksBrokenCounter() {
+  const bazaarBlocksBrokenElement = document.getElementById('bazaarBlocksBroken');
+  if (bazaarBlocksBrokenElement) {
+    bazaarBlocksBrokenElement.innerHTML = "Blocks Broken:<br>" + blocksBroken;
+  }
+}
+
+// 🎾 Upgrade Management System
+function loadUpgrades() {
+  const savedBallCount = localStorage.getItem('brickBreakerBallCount');
+  ballCount = savedBallCount ? parseInt(savedBallCount) : 1;
+  
+  const savedHighScoreUnlocked = localStorage.getItem('brickBreakerHighScoreUnlocked');
+  highScoreUnlocked = savedHighScoreUnlocked === 'true';
+  
+  const savedViewBalanceUnlocked = localStorage.getItem('brickBreakerViewBalanceUnlocked');
+  viewBalanceUnlocked = savedViewBalanceUnlocked === 'true';
+}
+
+function saveUpgrades() {
+  localStorage.setItem('brickBreakerBallCount', ballCount.toString());
+  localStorage.setItem('brickBreakerHighScoreUnlocked', highScoreUnlocked.toString());
+  localStorage.setItem('brickBreakerViewBalanceUnlocked', viewBalanceUnlocked.toString());
+}
+
+function buyViewBalance() {
+  if (blocksBroken >= 75) {
+    blocksBroken -= 75;
+    viewBalanceUnlocked = true;
+    
+    localStorage.setItem('brickBreakerBlocksBroken', blocksBroken.toString());
+    saveUpgrades();
+    updateBlocksBrokenCounter();
+    updateViewBalanceButton();
+    updateBazaarBlocksBrokenVisibility();
+  }
+}
+
+function buyHighScore() {
+  if (blocksBroken >= 120) {
+    blocksBroken -= 120;
+    highScoreUnlocked = true;
+    
+    localStorage.setItem('brickBreakerBlocksBroken', blocksBroken.toString());
+    saveUpgrades();
+    updateBlocksBrokenCounter();
+    updateHighScoreButton();
+    
+    // Redraw to show the record immediately
+    if (gameStarted) {
+      draw();
+    } else {
+      initialRender();
+    }
+  }
+}
+
+function buyExtraBall() {
+  if (blocksBroken >= 1000) {
+    blocksBroken -= 1000;
+    ballCount++;
+    
+    // Add a new ball to the active balls array
+    activeBalls.push(createBall());
+    
+    localStorage.setItem('brickBreakerBlocksBroken', blocksBroken.toString());
+    saveUpgrades();
+    updateBlocksBrokenCounter();
+    updateActiveBallsCounter();
+    updateBazaarBallsCounter();
+    updateExtraBallButton();
+  }
+}
+
+function updateViewBalanceButton() {
+  const viewBalanceBtn = document.getElementById('viewBalanceBtn');
+  if (viewBalanceBtn) {
+    if (blocksBroken >= 50 && !viewBalanceUnlocked) {
+      viewBalanceBtn.style.display = 'block';
+      // Add purchasable class if player has enough BB
+      if (blocksBroken >= 75) {
+        viewBalanceBtn.classList.add('purchasable');
+      } else {
+        viewBalanceBtn.classList.remove('purchasable');
+      }
+    } else {
+      viewBalanceBtn.style.display = 'none';
+      viewBalanceBtn.classList.remove('purchasable');
+    }
+  }
+}
+
+function updateBazaarBlocksBrokenVisibility() {
+  const bazaarBlocksBrokenElement = document.getElementById('bazaarBlocksBroken');
+  const bazaarSeparatorElement = document.getElementById('bazaarSeparator');
+  
+  if (bazaarBlocksBrokenElement && bazaarSeparatorElement) {
+    if (viewBalanceUnlocked) {
+      bazaarBlocksBrokenElement.style.display = 'block';
+      bazaarSeparatorElement.style.display = 'block';
+    } else {
+      bazaarBlocksBrokenElement.style.display = 'none';
+      bazaarSeparatorElement.style.display = 'none';
+    }
+  }
+}
+
+function updateHighScoreButton() {
+  const highScoreBtn = document.getElementById('highScoreBtn');
+  if (highScoreBtn) {
+    if (blocksBroken >= 80 && !highScoreUnlocked) {
+      highScoreBtn.style.display = 'block';
+      // Add purchasable class if player has enough BB
+      if (blocksBroken >= 120) {
+        highScoreBtn.classList.add('purchasable');
+      } else {
+        highScoreBtn.classList.remove('purchasable');
+      }
+    } else {
+      highScoreBtn.style.display = 'none';
+      highScoreBtn.classList.remove('purchasable');
+    }
+  }
+}
+
+function updateExtraBallButton() {
+  const extraBallBtn = document.getElementById('extraBallBtn');
+  if (extraBallBtn) {
+    if (blocksBroken >= 500) {
+      extraBallBtn.style.display = 'block';
+      // Add purchasable class if player has enough BB
+      if (blocksBroken >= 1000) {
+        extraBallBtn.classList.add('purchasable');
+      } else {
+        extraBallBtn.classList.remove('purchasable');
+      }
+    } else {
+      extraBallBtn.style.display = 'none';
+      extraBallBtn.classList.remove('purchasable');
+    }
+  }
+  updateBazaarSeparator();
+}
+
+function clearUpgrades() {
+  ballCount = 1;
+  highScoreUnlocked = false;
+  viewBalanceUnlocked = false;
+  bazaarUnlocked = false;
+  localStorage.removeItem('brickBreakerBazaarUnlocked');
+  saveUpgrades();
+  updateBazaarBallsCounter();
+  updateExtraBallButton();
+  updateHighScoreButton();
+  updateViewBalanceButton();
+  updateBazaarBlocksBrokenVisibility();
+  updateBazaarTipIndicator();
+  hideBazaarHint();
+  
+  // Redraw to hide the record immediately
+  if (gameStarted) {
+    draw();
+  } else {
+    initialRender();
+  }
+}
+
+function add1000BB() {
+  blocksBroken += 1000;
+  localStorage.setItem('brickBreakerBlocksBroken', blocksBroken.toString());
+  updateBlocksBrokenCounter();
+  updateViewBalanceButton();
+  updateHighScoreButton();
+  updateExtraBallButton();
+}
+
+// 🏪 Bazaar Management
+function loadBazaarStatus() {
+  const savedBazaarStatus = localStorage.getItem('brickBreakerBazaarUnlocked');
+  bazaarUnlocked = savedBazaarStatus === 'true';
+}
+
+function checkBazaarUnlock() {
+  if (blocksBroken >= 50 && !bazaarUnlocked) {
+    bazaarUnlocked = true;
+    localStorage.setItem('brickBreakerBazaarUnlocked', 'true');
+    showBazaarHint();
+    updateBazaarTipIndicator();
+  }
+}
+
+function showBazaarHint() {
+  const bazaarHint = document.getElementById('bazaarHint');
+  if (bazaarHint) {
+    bazaarHint.style.display = 'block';
+  }
+}
+
+function hideBazaarHint() {
+  const bazaarHint = document.getElementById('bazaarHint');
+  if (bazaarHint) {
+    bazaarHint.style.display = 'none';
+  }
+}
+
+function toggleBazaar() {
+  const bazaarElement = document.getElementById('bazaarElement');
+  if (bazaarElement) {
+    const currentDisplay = bazaarElement.style.display || getComputedStyle(bazaarElement).display;
+    const isVisible = currentDisplay === 'flex';
+    bazaarElement.style.display = isVisible ? 'none' : 'flex';
+  }
+}
+
+// Load record, play counter, wins, blocks broken, upgrades, and bazaar status on game start
 loadRecord();
 loadTimesPlayed();
 loadWins();
+loadBlocksBroken();
+loadUpgrades();
+loadBazaarStatus();
+
+// Initialize balls based on player's total ball count
+for (let i = 0; i < ballCount; i++) {
+  activeBalls.push(createBall());
+}
+
 updateWinCounter();
 updatePlayCounter();
+updateActiveBallsCounter();
+updateBazaarBallsCounter();
+updateBlocksBrokenCounter();
+updateExtraBallButton();
+updateHighScoreButton();
+updateViewBalanceButton();
+updateBazaarBlocksBrokenVisibility();
+updateBazaarTipIndicator();
+checkBazaarUnlock();
 
 // Initial render to show game elements (static, no animation loop)
 initialRender();
@@ -461,24 +808,27 @@ function startGame() {
    * Called when the player clicks retry after a game ends
    */
   function resetGame() {
-    if (gameLoop) cancelAnimationFrame(gameLoop); // 👈 also cancel here
-  
-    // Reset state
-    x = canvas.width / 2;
-    y = canvas.height - 50;
-    dx = baseSpeed;        // Reset to base speed
-    dy = -baseSpeed;       // Reset to base speed (negative for upward movement)
-    paddleX = (canvas.width - paddleWidth) / 2;
-    score = 0;
-  
+  if (gameLoop) cancelAnimationFrame(gameLoop); // 👈 also cancel here
+
+  // Reset state
+  activeBalls = []; // Start with empty array
+  // Add the correct number of balls based on player's total ball count
+  for (let i = 0; i < ballCount; i++) {
+    activeBalls.push(createBall());
+  }
+  ballsLost = 0;
+  paddleX = (canvas.width - paddleWidth) / 2;
+  score = 0;
+
          for (let c = 0; c < brickColumnCount; c++) {
        for (let r = 0; r < brickRowCount; r++) {
          bricks[c][r].status = 1;
          bricks[c][r].blinkFrames = 0;
        }
      }
-  
+
          gameStarted = true;
+         updateActiveBallsCounter();
 }
 
 // 🔧 Debug functionality
@@ -535,10 +885,25 @@ function resetWinCount() {
   updateWinCounter();
 }
 
+/**
+ * Resets the blocks broken counter to zero
+ * Called when "Reset BB Count" button is clicked
+ */
+function resetBlocksBrokenCount() {
+  blocksBroken = 0;
+  localStorage.removeItem('brickBreakerBlocksBroken');
+  updateBlocksBrokenCounter();
+}
+
 // 🎮 Debug event listeners
 document.addEventListener("keydown", (e) => {
   if (e.key === "'" || e.key === "'") {
     toggleDebugButtons();
+  }
+  
+  // E key to toggle bazaar
+  if (e.key === "e" || e.key === "E") {
+    toggleBazaar();
   }
   
   // Spacebar controls for game start/retry
@@ -560,4 +925,10 @@ document.addEventListener("keydown", (e) => {
 document.getElementById("clearRecordBtn").addEventListener("click", clearRecord);
 document.getElementById("forceWinBtn").addEventListener("click", forceWin);
 document.getElementById("resetWinCountBtn").addEventListener("click", resetWinCount);
+document.getElementById("resetBBCountBtn").addEventListener("click", resetBlocksBrokenCount);
+document.getElementById("add1000BBBtn").addEventListener("click", add1000BB);
+document.getElementById("clearUpgradesBtn").addEventListener("click", clearUpgrades);
+document.getElementById("extraBallBtn").addEventListener("click", buyExtraBall);
+document.getElementById("highScoreBtn").addEventListener("click", buyHighScore);
+document.getElementById("viewBalanceBtn").addEventListener("click", buyViewBalance);
   
