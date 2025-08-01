@@ -2,17 +2,6 @@
 
 A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/watch?v=ptk93AyICH0) built as a web application using Ruby and HTML5 Canvas, featuring an advanced upgrade system and progression mechanics.
 
-  <details>
-  <summary>Click to expand</summary>
-
-  **This content is hidden by default.**  
-  You can use **markdown** inside!
-
-  - Bullet 1
-  - Bullet 2
-
-</details>
-
 ## Features
 
 - **Classic Gameplay**: Control paddle with arrow keys to bounce ball and destroy bricks
@@ -22,13 +11,14 @@ A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/
 - **Brick Blinking Effect**: Bricks flash red for 2 frames when hit before disappearing
 - **Game States**: Start screen, countdown, gameplay, and game over with retry
 - **Win/Lose Conditions**: Win by destroying all 300 bricks, lose when last ball hits
-- <details>
-  <summary>**Unlockables (Spoiler)** - click to expand</summary>
+- **Unlockables (Spoiler)** - <details><summary>click to expand</summary>
+  
   - **Bazaar System**: Advanced upgrade shop with progression-based unlocks
   - **Progression Mechanics**: Blocks Broken currency system with persistent upgrades
   - **Record System**: Persistent high score storage using localStorage
   - **Bricko**: Interactive Bricko (rewarding)
   - **Multi-Ball System**: Purchase additional balls
+    
 </details>
 - **Custom Cursors**: Unique cursor designs for default and clickable elements
 - **Modern UI**: Dark theme with Work Sans typography and smooth animations
