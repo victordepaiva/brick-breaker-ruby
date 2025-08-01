@@ -71,6 +71,8 @@ for (let c = 0; c < brickColumnCount; c++) {
 // 📊 Score Tracking
 let score = 0;                // Player's current score (increases when bricks are destroyed)
 let record = 0;               // Highest score achieved (stored in localStorage)
+let timesPlayed = 0;          // Number of times the game has been played
+let wins = 0;                 // Number of times the player has won
 
 // 🎮 Event Listeners - Listen for keyboard input to control the paddle
 document.addEventListener("keydown", keyDownHandler);
@@ -82,8 +84,8 @@ document.addEventListener("keyup", keyUpHandler);
  * @param {KeyboardEvent} e - The keyboard event object
  */
 function keyDownHandler(e) {
-  if (e.key === "Right" || e.key === "ArrowRight") rightPressed = true;
-  else if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = true;
+  if (e.key === "Right" || e.key === "ArrowRight" || e.key === "d" || e.key === "D") rightPressed = true;
+  else if (e.key === "Left" || e.key === "ArrowLeft" || e.key === "a" || e.key === "A") leftPressed = true;
 }
 
 /**
@@ -93,8 +95,8 @@ function keyDownHandler(e) {
  * @param {KeyboardEvent} e - The keyboard event object
  */
 function keyUpHandler(e) {
-  if (e.key === "Right" || e.key === "ArrowRight") rightPressed = false;
-  else if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = false;
+  if (e.key === "Right" || e.key === "ArrowRight" || e.key === "d" || e.key === "D") rightPressed = false;
+  else if (e.key === "Left" || e.key === "ArrowLeft" || e.key === "a" || e.key === "A") leftPressed = false;
 }
 
 /**
@@ -136,9 +138,10 @@ function collisionDetection() {
              dy = dy > 0 ? newSpeed : -newSpeed;
            }
           
-          if (score === brickRowCount * brickColumnCount) {
-            showOverlay("You win!", score);
-          }
+                     if (score === brickRowCount * brickColumnCount) {
+             incrementWins(); // Increment win counter when player wins
+             showOverlay("You win!", score);
+           }
         }
       }
     }
@@ -244,6 +247,30 @@ function drawRecord() {
   }
 }
 
+
+
+/**
+ * 🏆 Updates the debug win counter in the HTML element
+ * Shows "Wins: X" in the debug element
+ */
+function updateWinCounter() {
+  const debugWinsElement = document.getElementById("debugWins");
+  if (debugWinsElement) {
+    debugWinsElement.textContent = "Wins: " + wins;
+  }
+}
+
+/**
+ * 📊 Updates the debug play counter in the HTML element
+ * Shows "Times Played: X" in the debug element
+ */
+function updatePlayCounter() {
+  const debugTimesPlayedElement = document.getElementById("debugTimesPlayed");
+  if (debugTimesPlayedElement) {
+    debugTimesPlayedElement.textContent = "Times Played: " + timesPlayed;
+  }
+}
+
 /**
  * 🎨 Main game loop function - handles all game rendering and logic
  * This function runs continuously during gameplay using requestAnimationFrame
@@ -316,8 +343,36 @@ function updateRecord() {
   }
 }
 
-// Load record on game start
+// 📊 Play Counter Management
+function loadTimesPlayed() {
+  const savedTimesPlayed = localStorage.getItem('brickBreakerTimesPlayed');
+  timesPlayed = savedTimesPlayed ? parseInt(savedTimesPlayed) : 0;
+}
+
+function incrementTimesPlayed() {
+  timesPlayed++;
+  localStorage.setItem('brickBreakerTimesPlayed', timesPlayed.toString());
+  updatePlayCounter();
+}
+
+// 🏆 Win Counter Management
+function loadWins() {
+  const savedWins = localStorage.getItem('brickBreakerWins');
+  wins = savedWins ? parseInt(savedWins) : 0;
+}
+
+function incrementWins() {
+  wins++;
+  localStorage.setItem('brickBreakerWins', wins.toString());
+  updateWinCounter();
+}
+
+// Load record, play counter, and wins on game start
 loadRecord();
+loadTimesPlayed();
+loadWins();
+updateWinCounter();
+updatePlayCounter();
 
 // Initial render to show game elements (static, no animation loop)
 initialRender();
@@ -361,6 +416,7 @@ function showCountdown(callback) {
 function startGame() {
     if (gameStarted) return;
     gameStarted = true;
+    incrementTimesPlayed(); // Increment play counter when game starts
     if (gameLoop) cancelAnimationFrame(gameLoop);
     document.getElementById("startBtn").style.display = "none";
     showCountdown(() => {
@@ -390,6 +446,7 @@ function startGame() {
   // 🔄 Retry button event listener - starts a new game when clicked
   document.getElementById("retryBtn").addEventListener("click", () => {
     document.getElementById("overlay").style.display = "none";
+    incrementTimesPlayed(); // Increment play counter on retry as well
     resetGame();
     initialRender(); // Redraw game elements immediately
     showCountdown(() => {
@@ -428,13 +485,13 @@ function startGame() {
 let debugVisible = false;
 
 /**
- * Toggles the visibility of debug buttons
+ * Toggles the visibility of debug element (which contains the buttons)
  * Called when the ' key is pressed
  */
 function toggleDebugButtons() {
   debugVisible = !debugVisible;
-  const debugButtons = document.getElementById("debugButtons");
-  debugButtons.style.display = debugVisible ? "flex" : "none";
+  const debugElement = document.getElementById("debugElement");
+  debugElement.style.display = debugVisible ? "flex" : "none";
 }
 
 /**
@@ -464,7 +521,18 @@ function forceWin() {
     }
   }
   score = brickRowCount * brickColumnCount;
+  incrementWins(); // Increment win counter when force winning
   showOverlay("You win!", score);
+}
+
+/**
+ * Resets the win counter to zero
+ * Called when "Reset Win Count" button is clicked
+ */
+function resetWinCount() {
+  wins = 0;
+  localStorage.removeItem('brickBreakerWins');
+  updateWinCounter();
 }
 
 // 🎮 Debug event listeners
@@ -472,9 +540,24 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "'" || e.key === "'") {
     toggleDebugButtons();
   }
+  
+  // Spacebar controls for game start/retry
+  if (e.key === " ") {
+    e.preventDefault(); // Prevent page scroll
+    
+    // If game hasn't started and start button is visible, start the game
+    if (!gameStarted && document.getElementById("startBtn").style.display !== "none") {
+      startGame();
+    }
+    // If game is over (overlay is visible), retry the game
+    else if (document.getElementById("overlay").style.display === "flex") {
+      document.getElementById("retryBtn").click();
+    }
+  }
 });
 
 // Debug button event listeners
 document.getElementById("clearRecordBtn").addEventListener("click", clearRecord);
 document.getElementById("forceWinBtn").addEventListener("click", forceWin);
+document.getElementById("resetWinCountBtn").addEventListener("click", resetWinCount);
   

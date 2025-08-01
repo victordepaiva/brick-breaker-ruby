@@ -15,7 +15,7 @@ A classic Brick Breaker/Breakout-style arcade game built as a web application us
 - **Custom Cursors**: Unique cursor designs for default and clickable elements
 - **Modern UI**: Dark theme with Work Sans typography and smooth animations
 - **Responsive Design**: Large 960x640 canvas with optimized game elements
-- **Debug Tools**: Hidden debug buttons (toggle with ' key) for testing
+- **Debug Panel**: Comprehensive debug interface with statistics and testing tools
 
 ## Architecture
 
@@ -67,8 +67,9 @@ brick-breaker-ruby/
   - And so on...
 
 ### **Controls**
-- **Left Arrow**: Move paddle left
-- **Right Arrow**: Move paddle right
+- **Left Arrow / A**: Move paddle left
+- **Right Arrow / D**: Move paddle right
+- **Spacebar**: Start game (if not started) or retry (if game over)
 - **Mouse**: Custom cursors for all interactive elements
 - **' Key**: Toggle debug buttons visibility
 
@@ -98,22 +99,30 @@ brick-breaker-ruby/
 - Responsive design that scales appropriately
 - Efficient brick state management with status tracking
 
-## Debug Tools
+## Debug Panel
 
-The game includes hidden debug functionality for testing and development:
+The game includes a comprehensive debug interface for testing and development:
 
-### **Accessing Debug Tools**
-- Press the **' key** (apostrophe) to toggle debug buttons
-- Debug buttons appear to the right of the "Start Game" button
+### **Accessing Debug Panel**
+- Press the **' key** (apostrophe) to toggle the debug panel
+- Debug panel appears to the left of the game frame
+- No layout shifting - game frame remains centered
 
-### **Debug Features**
-- **Clear Record**: Resets the high score to 0 and removes from localStorage
-- **Force Win**: Instantly destroys all bricks and triggers victory condition
+### **Debug Panel Features**
+- **Statistics Display**:
+  - **Wins**: Shows total number of games won
+  - **Times Played**: Shows total number of games played
+- **Debug Controls**:
+  - **Clear Record**: Resets the high score to 0 and removes from localStorage
+  - **Force Win**: Instantly destroys all bricks and triggers victory condition
+  - **Reset Win Count**: Resets the win counter to 0 and removes from localStorage
 
-### **Debug Button Layout**
-- Positioned right-aligned with the game frame
-- Same vertical level as the "Start Game" button
-- Styled to match the game's visual theme
+### **Debug Panel Layout**
+- **Position**: Left-aligned with the game frame (200px wide)
+- **Design**: Black background with white border, matching game frame styling
+- **Header**: "Debug Panel" title at the top
+- **Content**: Statistics and buttons arranged vertically
+- **Styling**: Centered buttons with compact sizing and hover effects
 
 ## Development
 

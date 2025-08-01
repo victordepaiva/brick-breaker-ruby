@@ -10,6 +10,18 @@
   </head>
   <body>
     <div class="game-wrapper">
+      <div id="debugElement">
+        <div id="debugHeader">Debug Panel</div>
+        <div id="debugContent">
+          <div id="debugWins">Wins: 0</div>
+          <div id="debugTimesPlayed">Times Played: 0</div>
+          <div id="debugButtons">
+            <button id="clearRecordBtn">Clear Record</button>
+            <button id="forceWinBtn">Force Win</button>
+            <button id="resetWinCountBtn">Reset Win Count</button>
+          </div>
+        </div>
+      </div>
       <div id="gameContainer">
                <canvas id="gameCanvas" width="960" height="640"></canvas>
     
@@ -26,10 +38,6 @@
       </div>
       
       <button id="startBtn">Start Game</button>
-      <div id="debugButtons" style="display: none;">
-        <button id="clearRecordBtn">Clear Record</button>
-        <button id="forceWinBtn">Force Win</button>
-      </div>
     </div>
   
     <script src="game.js"></script>

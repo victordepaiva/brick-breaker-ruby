@@ -13,11 +13,34 @@
   /* Fixed height container to prevent layout shift */
   .game-wrapper {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     height: 720px; /* Game container (640px) + button space (80px) */
     justify-content: center;
     position: relative; /* For absolute positioning of button */
+    gap: 20px;
+  }
+  
+  /* Game container stays centered */
+  #gameContainer {
+    position: relative;
+    /* Game container remains in fixed position */
+  }
+  
+  /* Debug element positioned absolutely to the left of game container */
+  #debugElement {
+    position: absolute;
+    left: -220px; /* 200px width + 20px gap */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    height: 640px;
+    background: #000;
+    border: 2px solid #F2F2F2;
+    border-radius: 8px;
+    display: none; /* Hidden by default, shown on ' key toggle */
+    align-items: center;
+    justify-content: center;
   }
   
   /* Custom cursor for clickable elements */
@@ -159,31 +182,66 @@
     z-index: 20;
   }
   
-  /* Debug buttons styling */
-  #debugButtons {
-    position: absolute;
-    bottom: -60px;
-    right: 0;
-    display: flex;
-    gap: 10px;
-  }
   
-  #clearRecordBtn, #forceWinBtn {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    font-size: 14px;
-    padding: 8px 16px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    cursor: url('/assets/images/cursor-pointer.png'), pointer;
-    font-family: 'Work Sans';
-    font-weight: 600;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-  }
-  
-  #clearRecordBtn:hover, #forceWinBtn:hover {
-    border-color: #F2F2F2;
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 8px #F2F2F2;
-  }
+
+#debugHeader {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #fff;
+  font-family: 'Work Sans';
+  font-weight: 600;
+  font-size: 18px;
+}
+
+#debugContent {
+  text-align: center;
+  color: #fff;
+  font-family: 'Work Sans';
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+#debugWins, #debugTimesPlayed {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+#debugButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 0 20px;
+  align-items: center;
+}
+
+#clearRecordBtn, #forceWinBtn, #resetWinCountBtn {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: url('/assets/images/cursor-pointer.png'), pointer;
+  font-family: 'Work Sans';
+  font-weight: 600;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+  width: fit-content;
+}
+
+#clearRecordBtn:hover, #forceWinBtn:hover, #resetWinCountBtn:hover {
+  border-color: #F2F2F2;
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px #F2F2F2;
+}
+
+
   
