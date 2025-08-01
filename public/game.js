@@ -27,9 +27,14 @@ const ctx = canvas.getContext("2d");
 // ⚽ Ball Properties
 let x = canvas.width / 2;     // Ball's current X position (starts in center)
 let y = canvas.height - 50;   // Ball's current Y position (starts just above paddle)
-let dx = 1;                   // Ball's horizontal speed (positive = moving right)
-let dy = -1;                  // Ball's vertical speed (negative = moving up)
+let dx = 1.5;                 // Ball's horizontal speed (positive = moving right)
+let dy = -1.5;                // Ball's vertical speed (negative = moving up)
 const ballRadius = 8;         // Size of the ball in pixels (further scaled down)
+
+// 🚀 Dynamic Speed System
+const baseSpeed = 1.5;        // Starting speed for both dx and dy
+const speedIncrease = 0.1;    // Speed increase per 10 bricks destroyed
+const speedIncreaseInterval = 10; // Every 10 bricks destroyed
 
 // 🏓 Paddle Properties
 const paddleHeight = 8;       // How tall the paddle is (further scaled down)
@@ -95,6 +100,7 @@ function keyUpHandler(e) {
  * Loops through all bricks and checks if the ball is touching any active brick
  * When a collision occurs: reverses ball direction, destroys the brick, increases score
  * Also checks for win condition when all bricks are destroyed
+ * Includes dynamic speed increase system
  */
 function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c++) {
@@ -110,6 +116,18 @@ function collisionDetection() {
           dy = -dy;
           b.status = 0;
           score++;
+          
+          // 🚀 Dynamic Speed Increase
+          // Increase ball speed every 10 bricks destroyed
+          if (score % speedIncreaseInterval === 0) {
+            const speedMultiplier = Math.floor(score / speedIncreaseInterval) * speedIncrease;
+            const newSpeed = baseSpeed + speedMultiplier;
+            
+            // Preserve direction while updating speed
+            dx = dx > 0 ? newSpeed : -newSpeed;
+            dy = dy > 0 ? newSpeed : -newSpeed;
+          }
+          
           if (score === brickRowCount * brickColumnCount) {
             showOverlay("You win!", score);
           }
@@ -121,26 +139,32 @@ function collisionDetection() {
 
 /**
  * 🔴 Draws the ball on the canvas
- * Creates a white circle at the current ball position (x, y)
+ * Creates a light gray circle at the current ball position (x, y)
  * The ball radius is defined by the ballRadius constant
  */
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = "#F2F2F2";
   ctx.fill();
   ctx.closePath();
 }
 
 /**
  * 🏓 Draws the paddle on the canvas
- * Creates a white rectangle at the bottom of the screen
+ * Creates an orange-to-red gradient rectangle at the bottom of the screen
  * The paddle position is controlled by the paddleX variable (left-right movement)
  */
 function drawPaddle() {
   ctx.beginPath();
   ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = "#fff";
+  
+  // Create horizontal linear gradient from #f8941c to #f03444
+  const gradient = ctx.createLinearGradient(paddleX, 0, paddleX + paddleWidth, 0);
+  gradient.addColorStop(0, "#f8941c");    // Orange on the left
+  gradient.addColorStop(1, "#f03444");    // Red on the right
+  
+  ctx.fillStyle = gradient;
   ctx.fill();
   ctx.closePath();
 }
@@ -149,7 +173,7 @@ function drawPaddle() {
  * 🧱 Draws all the bricks on the canvas
  * Only draws bricks that are still active (status = 1)
  * Calculates each brick's position based on row/column and spacing
- * Creates a blue rectangular grid of destructible bricks
+ * Creates a gray rectangular grid of destructible bricks
  */
 function drawBricks() {
   for (let c = 0; c < brickColumnCount; c++) {
@@ -161,7 +185,7 @@ function drawBricks() {
         bricks[c][r].y = brickY;
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = "#09f";
+        ctx.fillStyle = "#ACACAD";
         ctx.fill();
         ctx.closePath();
       }
@@ -324,8 +348,8 @@ function startGame() {
     // Reset state
     x = canvas.width / 2;
     y = canvas.height - 50;
-    dx = 2;
-    dy = -2;
+    dx = baseSpeed;        // Reset to base speed
+    dy = -baseSpeed;       // Reset to base speed (negative for upward movement)
     paddleX = (canvas.width - paddleWidth) / 2;
     score = 0;
   

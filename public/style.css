@@ -1,12 +1,18 @@
 body {
     margin: 0;
-    background: #111;
+    background: #101014;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     flex-direction: column;
     font-family: 'Work Sans', sans-serif;
+    cursor: url('/assets/images/cursor-default.png'), auto;
+  }
+  
+  /* Custom cursor for clickable elements */
+  a, button, [role="button"] {
+    cursor: url('/assets/images/cursor-pointer.png'), pointer;
   }
   
   canvas {
@@ -20,7 +26,7 @@ body {
     font-size: 18px;
     padding: 10px 20px;
     border: none;
-    cursor: pointer;
+    cursor: url('/assets/images/cursor-pointer.png'), pointer;
     margin-bottom: 20px;
   }
   
@@ -50,7 +56,7 @@ body {
     font-size: 16px;
     padding: 8px 16px;
     border: none;
-    cursor: pointer;
+    cursor: url('/assets/images/cursor-pointer.png'), pointer;
     margin-top: 10px;
   }
   
@@ -76,7 +82,7 @@ body {
     font-weight: 600;
     padding: 10px 20px;
     border: none;
-    cursor: pointer;
+    cursor: url('/assets/images/cursor-pointer.png'), pointer;
     margin-bottom: 20px;
   }
   
@@ -121,7 +127,7 @@ body {
     font-size: 16px;
     padding: 8px 16px;
     border: none;
-    cursor: pointer;
+    cursor: url('/assets/images/cursor-pointer.png'), pointer;
     margin-top: 10px;
   }
   
