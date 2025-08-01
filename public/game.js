@@ -144,18 +144,56 @@ function draw() {
   if (rightPressed && paddleX < canvas.width - paddleWidth) paddleX += 5;
   else if (leftPressed && paddleX > 0) paddleX -= 5;
 
-  gameLoop = requestAnimationFrame(draw);
+  // Only continue the game loop if the game is still active
+  if (gameStarted) {
+    gameLoop = requestAnimationFrame(draw);
+  }
 }
 
-// draw();
+// Initial render function to show game elements without starting animation
+function initialRender() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBricks();
+  drawBall();
+  drawPaddle();
+  drawScore();
+}
+
+// Initial render to show game elements (static, no animation loop)
+initialRender();
+
+function showCountdown(callback) {
+  const countdownEl = document.getElementById("countdown");
+  let count = 3;
+  
+  countdownEl.style.display = "flex";
+  countdownEl.textContent = count;
+  
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownEl.textContent = count;
+    } else {
+      countdownEl.textContent = "GO!";
+      setTimeout(() => {
+        countdownEl.style.display = "none";
+        callback();
+      }, 500);
+      clearInterval(countdownInterval);
+    }
+  }, 1000);
+}
 
 function startGame() {
     if (gameStarted) return;
     gameStarted = true;
-    if (gameLoop) cancelAnimationFrame(gameLoop); // 👈 kill previous loop
+    if (gameLoop) cancelAnimationFrame(gameLoop);
     document.getElementById("startBtn").style.display = "none";
-    draw();
+    showCountdown(() => {
+      draw();
+    });
   }
+  
   
   
   document.getElementById("startBtn").addEventListener("click", startGame);
@@ -170,7 +208,9 @@ function startGame() {
   document.getElementById("retryBtn").addEventListener("click", () => {
     document.getElementById("overlay").style.display = "none";
     resetGame();
-    draw();
+    showCountdown(() => {
+      draw();
+    });
   });
   
   function resetGame() {
