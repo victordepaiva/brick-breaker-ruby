@@ -6,6 +6,7 @@ body {
     align-items: center;
     height: 100vh;
     flex-direction: column;
+    font-family: 'Work Sans', sans-serif;
   }
   
   canvas {
@@ -31,15 +32,15 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 480px;
-    height: 320px;
+    width: 960px;
+    height: 640px;
     background-color: rgba(0, 0, 0, 0.85);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: white;
-    font-family: sans-serif;
+    font-family: 'Work Sans', sans-serif;
     z-index: 10;
   }
   
@@ -71,6 +72,8 @@ body {
     background: #09f;
     color: white;
     font-size: 18px;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
@@ -83,11 +86,13 @@ body {
   
   #gameContainer {
     position: relative;
-    width: 480px;
-    height: 320px;
+    width: 960px;
+    height: 640px;
   }
   
   canvas {
+    width: 960px;
+    height: 640px;
     border: 2px solid #fff;
     background: #000;
     display: block;
@@ -98,15 +103,15 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 480px;
-    height: 320px;
+    width: 960px;
+    height: 640px;
     background-color: rgba(0, 0, 0, 0.85);
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: white;
-    font-family: sans-serif;
+    font-family: 'Work Sans', sans-serif;
     z-index: 10;
   }
   
@@ -128,12 +133,13 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 480px;
-    height: 320px;
+    width: 960px;
+    height: 640px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 64px;
+    font-family: 'Work Sans', sans-serif;
     font-weight: bold;
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
