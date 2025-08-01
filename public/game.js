@@ -816,38 +816,41 @@ function toggleBazaar() {
   }
 }
 
-// Load record, play counter, wins, blocks broken, upgrades, and bazaar status on game start
-loadRecord();
-loadTimesPlayed();
-loadWins();
-loadBlocksBroken();
-loadBrickoTickles();
-loadUpgrades();
-loadBazaarStatus();
+// Wait for DOM to be fully loaded before initializing
+document.addEventListener('DOMContentLoaded', function() {
+  // Load record, play counter, wins, blocks broken, upgrades, and bazaar status on game start
+  loadRecord();
+  loadTimesPlayed();
+  loadWins();
+  loadBlocksBroken();
+  loadBrickoTickles();
+  loadUpgrades();
+  loadBazaarStatus();
 
-// Initialize balls based on player's total ball count
-for (let i = 0; i < ballCount; i++) {
-  activeBalls.push(createBall());
-}
+  // Initialize balls based on player's total ball count
+  for (let i = 0; i < ballCount; i++) {
+    activeBalls.push(createBall());
+  }
 
-updateWinCounter();
-updatePlayCounter();
-updateActiveBallsCounter();
-updateBrickoTicklesCounter();
-updateBazaarBallsCounter();
-updateBlocksBrokenCounter();
-updateExtraBallButton();
-updateHighScoreButton();
-updateViewBalanceButton();
-updateBrickoButton();
-updateBrickoVisibility();
-updatePeruseHintVisibility();
-updateBazaarBlocksBrokenVisibility();
-updateBazaarTipIndicator();
-checkBazaarUnlock();
+  updateWinCounter();
+  updatePlayCounter();
+  updateActiveBallsCounter();
+  updateBrickoTicklesCounter();
+  updateBazaarBallsCounter();
+  updateBlocksBrokenCounter();
+  updateExtraBallButton();
+  updateHighScoreButton();
+  updateViewBalanceButton();
+  updateBrickoButton();
+  updateBrickoVisibility();
+  updatePeruseHintVisibility();
+  updateBazaarBlocksBrokenVisibility();
+  updateBazaarTipIndicator();
+  checkBazaarUnlock();
 
-// Initial render to show game elements (static, no animation loop)
-initialRender();
+  // Initial render to show game elements (static, no animation loop)
+  initialRender();
+});
 
 /**
  * ⏱️ Displays a countdown timer before the game starts

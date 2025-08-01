@@ -348,19 +348,26 @@
   text-align: center;
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-family: 'Work Sans';
+  font-weight: 600;
+  z-index: 10;
 }
 
 #peruseHint {
   position: relative;
-  bottom: 15px;
-  left: 400px;
+  left: 420px;
   right: 0;
+  bottom: 25px;
+  margin: 60 auto;
+  margin-top: 0px;
   color: #fff;
   font-family: 'Work Sans';
   font-weight: 300;
   font-size: 12px;
   text-align: center;
   white-space: nowrap;
+  width: fit-content;
 }
 
 #controlsHint {
