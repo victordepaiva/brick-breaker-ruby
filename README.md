@@ -105,7 +105,7 @@ The game features an advanced upgrade shop system with progression-based unlocks
 - **Access Method**: Press 'E' key to toggle Bazaar visibility
 - **Hint System**: "press E to peruse" appears at bottom-right when unlocked (permanently visible after 50 BB)
 
-## Upgrade Progression (Spoiler)**
+## **Upgrade Progression**
   
   #### **View Balance (75 BB)**
 - **Appears at**: 50 Blocks Broken
@@ -144,20 +144,20 @@ The game features an advanced upgrade shop system with progression-based unlocks
 
 ## Bricko Feature
 
-A unique interactive element that adds personality to the game:
+A tickable Bricko:
 
 ### **Bricko Frame**
 - **Position**: Below the game frame, aligned to the right border
 - **Size**: Square frame with width matching the Start Game button
 - **Design**: Black background with white border and rounded corners
 
-### **Bricko Brick**
-- **Appearance**: Single brick element 50% larger than regular bricks
-- **Interaction**: Clickable with custom cursor on hover
-- **Animation**: "Dotween" effect - scales to 1.3x max size on click
+### **Bricko**
+- **Appearance**: Single Bricko 50% larger than regular bricks
+- **Interaction**: Tickable on click, with custom cursor on hover
+- **Animation**: "Dotween-like" effect - scales to 1.3x max size on click
 - **Visual Feedback**: Blinks red for one frame when clicked
 
-### **Bricko Rewards**
+### **Bricko Effects**
 - **Bricko Tickles**: Counter increases with each click (saved in localStorage)
 - **Blocks Broken**: Each click adds +1 to total Blocks Broken count
 - **Debug Panel**: "Bricko Tickles" counter displayed in debug panel
