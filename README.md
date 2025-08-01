@@ -11,7 +11,7 @@ A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/
 - **Brick Blinking Effect**: Bricks flash red for 2 frames when hit before disappearing
 - **Game States**: Start screen, countdown, gameplay, and game over with retry
 - **Win/Lose Conditions**: Win by destroying all 300 bricks, lose when last ball hits
-- **Unlockables (Spoiler)** - <details><summary>click to expand</summary>
+- **Unlockables (Spoiler)** <details><summary>click to expand</summary>
   
   - **Bazaar System**: Advanced upgrade shop with progression-based unlocks
   - **Progression Mechanics**: Blocks Broken currency system with persistent upgrades
@@ -20,6 +20,7 @@ A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/
   - **Multi-Ball System**: Purchase additional balls
     
 </details>
+
 - **Custom Cursors**: Unique cursor designs for default and clickable elements
 - **Modern UI**: Dark theme with Work Sans typography and smooth animations
 - **Responsive Design**: Large 960x640 canvas with optimized game elements
@@ -93,7 +94,7 @@ brick-breaker-ruby/
 - **Brick Effects**: Red flash (`#f03444`) when bricks are hit
 - **Button States**: Gradient backgrounds for purchasable upgrades
 
-## Bazaar System
+## Bazaar System (Spoiler) <details><summary>click to expand</summary>
 
 The game features an advanced upgrade shop system with progression-based unlocks:
 
@@ -102,8 +103,7 @@ The game features an advanced upgrade shop system with progression-based unlocks
 - **Access Method**: Press 'E' key to toggle Bazaar visibility
 - **Hint System**: "press E to peruse" appears at bottom-right when unlocked (permanently visible after 50 BB)
 
-<details>
-  <summary>**## Upgrade Progression (Spoiler)** - click to expand</summary>
+## Upgrade Progression (Spoiler)**
   
   #### **View Balance (75 BB)**
 - **Appears at**: 50 Blocks Broken
@@ -165,9 +165,7 @@ A unique interactive element that adds personality to the game:
 - **Persistence**: Tickles count saved across game sessions
 - **Upgrade Integration**: Bricko frame only visible after purchasing the upgrade
 
-</details>**Unlockables (Spoiler)**:
-### **Upgrade Progression**
-
+</details>
 
 ## Debug Panel
 
