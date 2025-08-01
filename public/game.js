@@ -58,17 +58,19 @@ const brickOffsetLeft = (canvas.width - totalBrickWidth) / 2;
 
 // 🧱 Brick Grid Initialization
 // Create a 2D array to store all brick objects
-// Each brick has x, y coordinates and status (1 = active, 0 = destroyed)
+// Each brick has x, y coordinates and status (1 = active, 0 = destroyed, 2 = blinking)
+// For blinking bricks, we also track the frame count
 const bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
   bricks[c] = [];
   for (let r = 0; r < brickRowCount; r++) {
-    bricks[c][r] = { x: 0, y: 0, status: 1 };
+    bricks[c][r] = { x: 0, y: 0, status: 1, blinkFrames: 0 };
   }
 }
 
 // 📊 Score Tracking
 let score = 0;                // Player's current score (increases when bricks are destroyed)
+let record = 0;               // Highest score achieved (stored in localStorage)
 
 // 🎮 Event Listeners - Listen for keyboard input to control the paddle
 document.addEventListener("keydown", keyDownHandler);
@@ -112,21 +114,27 @@ function collisionDetection() {
           x < b.x + brickWidth &&
           y > b.y &&
           y < b.y + brickHeight
-        ) {
-          dy = -dy;
-          b.status = 0;
-          score++;
-          
-          // 🚀 Dynamic Speed Increase
-          // Increase ball speed every 10 bricks destroyed
-          if (score % speedIncreaseInterval === 0) {
-            const speedMultiplier = Math.floor(score / speedIncreaseInterval) * speedIncrease;
-            const newSpeed = baseSpeed + speedMultiplier;
-            
-            // Preserve direction while updating speed
-            dx = dx > 0 ? newSpeed : -newSpeed;
-            dy = dy > 0 ? newSpeed : -newSpeed;
-          }
+                 ) {
+           dy = -dy;
+           b.status = 2; // Set to blinking state
+           b.blinkFrames = 0; // Start frame counter
+                      score++;
+           
+           // 🏆 Update record if this is the first score or a new high score
+           if (score === 1 || score > record) {
+             updateRecord();
+           }
+           
+           // 🚀 Dynamic Speed Increase
+           // Increase ball speed every 10 bricks destroyed
+           if (score % speedIncreaseInterval === 0) {
+             const speedMultiplier = Math.floor(score / speedIncreaseInterval) * speedIncrease;
+             const newSpeed = baseSpeed + speedMultiplier;
+             
+             // Preserve direction while updating speed
+             dx = dx > 0 ? newSpeed : -newSpeed;
+             dy = dy > 0 ? newSpeed : -newSpeed;
+           }
           
           if (score === brickRowCount * brickColumnCount) {
             showOverlay("You win!", score);
@@ -188,7 +196,24 @@ function drawBricks() {
         ctx.fillStyle = "#ACACAD";
         ctx.fill();
         ctx.closePath();
-      }
+             } else if (bricks[c][r].status === 2) {
+         // Draw blinking brick in red
+         const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+         const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+         ctx.beginPath();
+         ctx.rect(brickX, brickY, brickWidth, brickHeight);
+         ctx.fillStyle = "#f03444";
+         ctx.fill();
+         ctx.closePath();
+         
+         // Increment frame counter
+         bricks[c][r].blinkFrames++;
+         
+         // Set to destroyed after two frames
+         if (bricks[c][r].blinkFrames >= 2) {
+           bricks[c][r].status = 0;
+         }
+       }
     }
   }
 }
@@ -201,7 +226,22 @@ function drawBricks() {
 function drawScore() {
   ctx.font = "bold 16px 'Work Sans'";
   ctx.fillStyle = "#fff";
-  ctx.fillText("Score: " + score, 12, 25);
+  ctx.fillText("Score: " + score + " / 300", 12, 25);
+}
+
+/**
+ * 🏆 Draws the record score in the top-right corner
+ * Only displays if the player has achieved a score > 0
+ * Shows "Record: X" in white text
+ */
+function drawRecord() {
+  if (record > 0) {
+    ctx.font = "bold 16px 'Work Sans'";
+    ctx.fillStyle = "#fff";
+    const recordText = "Record: " + record;
+    const textWidth = ctx.measureText(recordText).width;
+    ctx.fillText(recordText, canvas.width - textWidth - 12, 25);
+  }
 }
 
 /**
@@ -220,6 +260,7 @@ function draw() {
   drawBall();
   drawPaddle();
   drawScore();
+  drawRecord();
   collisionDetection();
 
   // Ball movement
@@ -259,7 +300,24 @@ function initialRender() {
   drawBall();
   drawPaddle();
   drawScore();
+  drawRecord();
 }
+
+// 🏆 Record Management
+function loadRecord() {
+  const savedRecord = localStorage.getItem('brickBreakerRecord');
+  record = savedRecord ? parseInt(savedRecord) : 0;
+}
+
+function updateRecord() {
+  if (score > record) {
+    record = score;
+    localStorage.setItem('brickBreakerRecord', record.toString());
+  }
+}
+
+// Load record on game start
+loadRecord();
 
 // Initial render to show game elements (static, no animation loop)
 initialRender();
@@ -272,17 +330,19 @@ initialRender();
  */
 function showCountdown(callback) {
   const countdownEl = document.getElementById("countdown");
+  const countdownText = document.getElementById("countdownText");
   let count = 3;
   
   countdownEl.style.display = "flex";
-  countdownEl.textContent = count;
+  countdownText.textContent = count;
+  countdownText.style.transform = "translateY(120px)";
   
   const countdownInterval = setInterval(() => {
     count--;
     if (count > 0) {
-      countdownEl.textContent = count;
+      countdownText.textContent = count;
     } else {
-      countdownEl.textContent = "GO!";
+      countdownText.textContent = "GO!";
       setTimeout(() => {
         countdownEl.style.display = "none";
         callback();
@@ -331,6 +391,7 @@ function startGame() {
   document.getElementById("retryBtn").addEventListener("click", () => {
     document.getElementById("overlay").style.display = "none";
     resetGame();
+    initialRender(); // Redraw game elements immediately
     showCountdown(() => {
       draw();
     });
@@ -353,12 +414,67 @@ function startGame() {
     paddleX = (canvas.width - paddleWidth) / 2;
     score = 0;
   
-    for (let c = 0; c < brickColumnCount; c++) {
-      for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r].status = 1;
-      }
-    }
+         for (let c = 0; c < brickColumnCount; c++) {
+       for (let r = 0; r < brickRowCount; r++) {
+         bricks[c][r].status = 1;
+         bricks[c][r].blinkFrames = 0;
+       }
+     }
   
-    gameStarted = true;
+         gameStarted = true;
 }
+
+// 🔧 Debug functionality
+let debugVisible = false;
+
+/**
+ * Toggles the visibility of debug buttons
+ * Called when the ' key is pressed
+ */
+function toggleDebugButtons() {
+  debugVisible = !debugVisible;
+  const debugButtons = document.getElementById("debugButtons");
+  debugButtons.style.display = debugVisible ? "flex" : "none";
+}
+
+/**
+ * Clears the record from localStorage and resets the display
+ * Called when "Clear Record" button is clicked
+ */
+function clearRecord() {
+  record = 0;
+  localStorage.removeItem('brickBreakerRecord');
+  // Redraw to update the display
+  if (gameStarted) {
+    draw();
+  } else {
+    initialRender();
+  }
+}
+
+/**
+ * Forces a win condition by destroying all bricks
+ * Called when "Force Win" button is clicked
+ */
+function forceWin() {
+  // Destroy all bricks
+  for (let c = 0; c < brickColumnCount; c++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      bricks[c][r].status = 0;
+    }
+  }
+  score = brickRowCount * brickColumnCount;
+  showOverlay("You win!", score);
+}
+
+// 🎮 Debug event listeners
+document.addEventListener("keydown", (e) => {
+  if (e.key === "'" || e.key === "'") {
+    toggleDebugButtons();
+  }
+});
+
+// Debug button event listeners
+document.getElementById("clearRecordBtn").addEventListener("click", clearRecord);
+document.getElementById("forceWinBtn").addEventListener("click", forceWin);
   

@@ -1,4 +1,4 @@
-body {
+  body {
     margin: 0;
     background: #101014;
     display: flex;
@@ -10,6 +10,16 @@ body {
     cursor: url('/assets/images/cursor-default.png'), auto;
   }
   
+  /* Fixed height container to prevent layout shift */
+  .game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 720px; /* Game container (640px) + button space (80px) */
+    justify-content: center;
+    position: relative; /* For absolute positioning of button */
+  }
+  
   /* Custom cursor for clickable elements */
   a, button, [role="button"] {
     cursor: url('/assets/images/cursor-pointer.png'), pointer;
@@ -18,20 +28,30 @@ body {
   canvas {
     border: 2px solid #fff;
     background: #000;
+    border-radius: 8px;
   }
   
   #startBtn {
-    background: #09f;
+    background: rgba(255, 255, 255, 0.05);
     color: white;
     font-size: 18px;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
     padding: 10px 20px;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     cursor: url('/assets/images/cursor-pointer.png'), pointer;
-    margin-bottom: 20px;
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   
   #startBtn:hover {
-    background: #06c;
+    border-color: #F2F2F2;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 8px #F2F2F2;
   }
   
   #overlay {
@@ -50,44 +70,39 @@ body {
     z-index: 10;
   }
   
+  /* Move only the overlay content down */
+  #overlay > * {
+    transform: translateY(80px);
+  }
+  
   #retryBtn {
-    background: #09f;
+    background: rgba(255, 255, 255, 0.05);
     color: white;
     font-size: 16px;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
     padding: 8px 16px;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     cursor: url('/assets/images/cursor-pointer.png'), pointer;
     margin-top: 10px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   
   #retryBtn:hover {
-    background: #06c;
+    border-color: #00f0ff;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 8px #00f0ff;
   }
 
-  body {
-    margin: 0;
-    background: #111;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
+  /* Removed duplicate body rule - using the one above */
   
-  #startBtn {
-    background: #09f;
-    color: white;
-    font-size: 18px;
-    font-family: 'Work Sans', sans-serif;
-    font-weight: 600;
-    padding: 10px 20px;
-    border: none;
-    cursor: url('/assets/images/cursor-pointer.png'), pointer;
-    margin-bottom: 20px;
-  }
+  /* Button styling is handled above - removing duplicate */
   
   #startBtn:hover {
-    background: #06c;
+    border-color: #F2F2F2;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 8px #F2F2F2;
   }
   
   #gameContainer {
@@ -101,38 +116,30 @@ body {
     height: 640px;
     border: 2px solid #fff;
     background: #000;
+    border-radius: 8px;
     display: block;
   }
   
-  /* Overlay is now anchored to #gameContainer */
-  #overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 960px;
-    height: 640px;
-    background-color: rgba(0, 0, 0, 0.85);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-family: 'Work Sans', sans-serif;
-    z-index: 10;
-  }
+  /* Removed duplicate overlay rule - using the one above */
   
   #retryBtn {
-    background: #09f;
+    background: rgba(255, 255, 255, 0.05);
     color: white;
     font-size: 16px;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
     padding: 8px 16px;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     cursor: url('/assets/images/cursor-pointer.png'), pointer;
     margin-top: 10px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
   
   #retryBtn:hover {
-    background: #06c;
+    border-color: #F2F2F2;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 8px #F2F2F2;
   }
 
   #countdown {
@@ -150,5 +157,33 @@ body {
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 20;
+  }
+  
+  /* Debug buttons styling */
+  #debugButtons {
+    position: absolute;
+    bottom: -60px;
+    right: 0;
+    display: flex;
+    gap: 10px;
+  }
+  
+  #clearRecordBtn, #forceWinBtn {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 14px;
+    padding: 8px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: url('/assets/images/cursor-pointer.png'), pointer;
+    font-family: 'Work Sans';
+    font-weight: 600;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  
+  #clearRecordBtn:hover, #forceWinBtn:hover {
+    border-color: #F2F2F2;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 8px #F2F2F2;
   }
   

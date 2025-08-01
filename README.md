@@ -8,11 +8,14 @@ A classic Brick Breaker/Breakout-style arcade game built as a web application us
 - **Physics Engine**: Realistic ball movement with collision detection and wall bouncing
 - **Progressive Difficulty**: Ball speed increases by 0.1 every 10 bricks destroyed
 - **Scoring System**: Points awarded for each brick destroyed (300 total bricks)
+- **Record System**: Persistent high score storage using localStorage
+- **Brick Blinking Effect**: Bricks flash red for 2 frames when hit before disappearing
 - **Game States**: Start screen, countdown, gameplay, and game over with retry
 - **Win/Lose Conditions**: Win by destroying all 300 bricks, lose if ball passes paddle
 - **Custom Cursors**: Unique cursor designs for default and clickable elements
 - **Modern UI**: Dark theme with Work Sans typography and smooth animations
 - **Responsive Design**: Large 960x640 canvas with optimized game elements
+- **Debug Tools**: Hidden debug buttons (toggle with ' key) for testing
 
 ## Architecture
 
@@ -67,12 +70,14 @@ brick-breaker-ruby/
 - **Left Arrow**: Move paddle left
 - **Right Arrow**: Move paddle right
 - **Mouse**: Custom cursors for all interactive elements
+- **' Key**: Toggle debug buttons visibility
 
 ### **Visual Design**
 - **Background**: Dark gray (`#101014`)
 - **Typography**: Work Sans font family
 - **Cursors**: Custom PNG cursors for enhanced UX
 - **Color Scheme**: Dark theme with orange/red accents
+- **Brick Effects**: Red flash (`#f03444`) when bricks are hit
 
 ## Technical Details
 
@@ -80,6 +85,7 @@ brick-breaker-ruby/
 - Uses `requestAnimationFrame` for smooth 60fps rendering
 - Collision detection between ball, paddle, walls, and bricks
 - Dynamic speed adjustment based on score progression
+- Brick blinking system with 2-frame red flash effect
 
 ### **Asset System**
 - Custom cursor images served from `/assets/images/` directory
@@ -90,6 +96,24 @@ brick-breaker-ruby/
 - Optimized canvas rendering with efficient collision detection
 - Minimal DOM manipulation for smooth gameplay
 - Responsive design that scales appropriately
+- Efficient brick state management with status tracking
+
+## Debug Tools
+
+The game includes hidden debug functionality for testing and development:
+
+### **Accessing Debug Tools**
+- Press the **' key** (apostrophe) to toggle debug buttons
+- Debug buttons appear to the right of the "Start Game" button
+
+### **Debug Features**
+- **Clear Record**: Resets the high score to 0 and removes from localStorage
+- **Force Win**: Instantly destroys all bricks and triggers victory condition
+
+### **Debug Button Layout**
+- Positioned right-aligned with the game frame
+- Same vertical level as the "Start Game" button
+- Styled to match the game's visual theme
 
 ## Development
 

@@ -9,21 +9,27 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <button id="startBtn">START GAME</button>
-  
-    <div id="gameContainer">
-             <canvas id="gameCanvas" width="960" height="640"></canvas>
-  
-      <div id="overlay">
-        <h1 id="message">You lost!</h1>
-        <p id="finalScore"></p>
-        <button id="retryBtn">RETRY</button>
+    <div class="game-wrapper">
+      <div id="gameContainer">
+               <canvas id="gameCanvas" width="960" height="640"></canvas>
+    
+        <div id="overlay" style="display: none;">
+          <h1 id="message">You lost!</h1>
+          <p id="finalScore"></p>
+          <button id="retryBtn">Retry</button>
+        </div>
+        
+        <div id="countdown" style="display: none;">
+          <span id="countdownText">3</span>
+        </div>
+
       </div>
       
-      <div id="countdown" style="display: none;">
-        3
+      <button id="startBtn">Start Game</button>
+      <div id="debugButtons" style="display: none;">
+        <button id="clearRecordBtn">Clear Record</button>
+        <button id="forceWinBtn">Force Win</button>
       </div>
-
     </div>
   
     <script src="game.js"></script>
