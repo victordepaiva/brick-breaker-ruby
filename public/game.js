@@ -128,11 +128,11 @@ function keyUpHandler(e) {
  */
 function collisionDetection() {
   for (let ball of activeBalls) {
-    for (let c = 0; c < brickColumnCount; c++) {
-      for (let r = 0; r < brickRowCount; r++) {
-        const b = bricks[c][r];
-        if (b.status === 1) {
-          if (
+  for (let c = 0; c < brickColumnCount; c++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      const b = bricks[c][r];
+      if (b.status === 1) {
+        if (
             ball.x > b.x &&
             ball.x < b.x + brickWidth &&
             ball.y > b.y &&
@@ -141,7 +141,7 @@ function collisionDetection() {
                      ball.dy = -ball.dy;
             b.status = 2; // Set to blinking state
             b.blinkFrames = 0; // Start frame counter
-            score++;
+          score++;
             incrementBlocksBroken(); // Increment total blocks broken counter
            
            // 🏆 Update record if this is the first score or a new high score
@@ -162,9 +162,9 @@ function collisionDetection() {
              }
            }
           
-                     if (score === brickRowCount * brickColumnCount) {
+          if (score === brickRowCount * brickColumnCount) {
              incrementWins(); // Increment win counter when player wins
-             showOverlay("You win!", score);
+            showOverlay("You win!", score);
            }
           }
         }
@@ -180,11 +180,11 @@ function collisionDetection() {
  */
 function drawBalls() {
   for (let ball of activeBalls) {
-    ctx.beginPath();
+  ctx.beginPath();
     ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
     ctx.fillStyle = "#F2F2F2";
-    ctx.fill();
-    ctx.closePath();
+  ctx.fill();
+  ctx.closePath();
   }
 }
 
@@ -381,18 +381,18 @@ function draw() {
   // Ball movement and collision detection
   for (let i = activeBalls.length - 1; i >= 0; i--) {
     const ball = activeBalls[i];
-    
-    // Ball movement
+
+  // Ball movement
     ball.x += ball.dx;
     ball.y += ball.dy;
 
-    // Bounce off walls
+  // Bounce off walls
     if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) ball.dx = -ball.dx;
     if (ball.y + ball.dy < ballRadius) ball.dy = -ball.dy;
     else if (ball.y + ball.dy > canvas.height - ballRadius) {
       if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
         ball.dy = -ball.dy;
-      } else {
+    } else {
         // Ball lost - remove it from active balls
         activeBalls.splice(i, 1);
         ballsLost++;
@@ -400,10 +400,10 @@ function draw() {
         
         // Check if all balls are lost
         if (activeBalls.length === 0) {
-          showOverlay("You lost!", score);
+        showOverlay("You lost!", score);
         }
       }
-    }
+      }
   }
 
   // Paddle movement
@@ -412,8 +412,8 @@ function draw() {
 
   // Only continue the game loop if the game is still active
   if (gameStarted) {
-    gameLoop = requestAnimationFrame(draw);
-  }
+  gameLoop = requestAnimationFrame(draw);
+}
 }
 
 /**
@@ -936,26 +936,26 @@ function startGame() {
    * Called when the player clicks retry after a game ends
    */
   function resetGame() {
-  if (gameLoop) cancelAnimationFrame(gameLoop); // 👈 also cancel here
-
-  // Reset state
+    if (gameLoop) cancelAnimationFrame(gameLoop); // 👈 also cancel here
+  
+    // Reset state
   activeBalls = []; // Start with empty array
   // Add the correct number of balls based on player's total ball count
   for (let i = 0; i < ballCount; i++) {
     activeBalls.push(createBall());
   }
   ballsLost = 0;
-  paddleX = (canvas.width - paddleWidth) / 2;
-  score = 0;
-
-         for (let c = 0; c < brickColumnCount; c++) {
-       for (let r = 0; r < brickRowCount; r++) {
-         bricks[c][r].status = 1;
+    paddleX = (canvas.width - paddleWidth) / 2;
+    score = 0;
+  
+    for (let c = 0; c < brickColumnCount; c++) {
+      for (let r = 0; r < brickRowCount; r++) {
+        bricks[c][r].status = 1;
          bricks[c][r].blinkFrames = 0;
-       }
-     }
-
-         gameStarted = true;
+      }
+    }
+  
+    gameStarted = true;
          updateActiveBallsCounter();
 }
 

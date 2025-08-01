@@ -2,6 +2,17 @@
 
 A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/watch?v=ptk93AyICH0) built as a web application using Ruby and HTML5 Canvas, featuring an advanced upgrade system and progression mechanics.
 
+  <details>
+  <summary>Click to expand</summary>
+
+  **This content is hidden by default.**  
+  You can use **markdown** inside!
+
+  - Bullet 1
+  - Bullet 2
+
+</details>
+
 ## Features
 
 - **Classic Gameplay**: Control paddle with arrow keys to bounce ball and destroy bricks
@@ -11,13 +22,15 @@ A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/
 - **Record System**: Persistent high score storage using localStorage
 - **Brick Blinking Effect**: Bricks flash red for 2 frames when hit before disappearing
 - **Game States**: Start screen, countdown, gameplay, and game over with retry
-- **Win/Lose Conditions**: Win by destroying all 300 bricks, lose if ball passes paddle
+- **Win/Lose Conditions**: Win by destroying all 300 bricks, lose when last ball hits bottom
 - **Custom Cursors**: Unique cursor designs for default and clickable elements
 - **Modern UI**: Dark theme with Work Sans typography and smooth animations
 - **Responsive Design**: Large 960x640 canvas with optimized game elements
 - **Debug Panel**: Comprehensive debug interface with statistics and testing tools
 - **Bazaar System**: Advanced upgrade shop with progression-based unlocks
 - **Progression Mechanics**: Blocks Broken currency system with persistent upgrades
+- **Bricko Feature**: Interactive brick character with clickable animations and rewards
+- **Multi-Ball System**: Purchase additional balls to increase chances of winning
 
 ## Architecture
 
@@ -50,8 +63,9 @@ brick-breaker-ruby/
 1. Install dependencies: `bundle install`
 2. Start server: `bundle exec rackup`
 3. Open browser to `http://localhost:9292`
-4. Use arrow keys to control paddle
+4. Use arrow keys or A/D to control paddle
 5. Press 'E' to access the Bazaar (after unlocking)
+6. Press ' (apostrophe) to toggle debug panel
 
 ## Game Mechanics
 
@@ -93,7 +107,7 @@ The game features an advanced upgrade shop system with progression-based unlocks
 ### **Accessing the Bazaar**
 - **Unlock Requirement**: Reach 50 Blocks Broken total
 - **Access Method**: Press 'E' key to toggle Bazaar visibility
-- **Hint System**: "press E to peruse" appears at bottom-right when unlocked
+- **Hint System**: "press E to peruse" appears at bottom-right when unlocked (permanently visible after 50 BB)
 
 ### **Upgrade Progression**
 
@@ -109,8 +123,14 @@ The game features an advanced upgrade shop system with progression-based unlocks
 - **Effect**: Unlocks Record display in top-right corner of game
 - **Type**: One-time purchase
 
+#### **Bricko (160 BB)**
+- **Appears at**: 150 Blocks Broken
+- **Cost**: 160 Blocks Broken
+- **Effect**: Unlocks Bricko frame below game with clickable brick character
+- **Type**: One-time purchase
+
 #### **Extra Ball (1000 BB)**
-- **Appears at**: 500 Blocks Broken
+- **Appears at**: 1000 Blocks Broken
 - **Cost**: 1000 Blocks Broken
 - **Effect**: Adds +1 ball to your total ball count
 - **Type**: Can be purchased multiple times
@@ -125,6 +145,31 @@ The game features an advanced upgrade shop system with progression-based unlocks
 - **Balls Counter**: Displays total purchased balls (only visible after first purchase)
 - **Separators**: Visual dividers between sections
 - **Persistent State**: All upgrades saved in localStorage
+
+## Bricko Feature
+
+A unique interactive element that adds personality to the game:
+
+### **Bricko Frame**
+- **Position**: Below the game frame, aligned to the right border
+- **Size**: Square frame with width matching the Start Game button
+- **Design**: Black background with white border and rounded corners
+
+### **Bricko Brick**
+- **Appearance**: Single brick element 50% larger than regular bricks
+- **Interaction**: Clickable with custom cursor on hover
+- **Animation**: "Dotween" effect - scales to 1.3x max size on click
+- **Visual Feedback**: Blinks red for one frame when clicked
+
+### **Bricko Rewards**
+- **Bricko Tickles**: Counter increases with each click (saved in localStorage)
+- **Blocks Broken**: Each click adds +1 to total Blocks Broken count
+- **Debug Panel**: "Bricko Tickles" counter displayed in debug panel
+
+### **Bricko Controls**
+- **Reset Tickles**: Debug button to reset Bricko tickle counter
+- **Persistence**: Tickles count saved across game sessions
+- **Upgrade Integration**: Bricko frame only visible after purchasing the upgrade
 
 ## Debug Panel
 
@@ -142,13 +187,15 @@ The game includes a comprehensive debug interface for testing and development:
 - **Times Played**: Shows total number of games played (includes retries)
 - **Active Balls**: Shows current number of balls in play
 - **Bazaar Tip**: Shows whether bazaar hint is unlocked
+- **Bricko Tickles**: Shows total number of Bricko clicks
 
 #### **Debug Controls**
 - **Clear Record**: Resets the high score to 0 and removes from localStorage
 - **Force Win**: Instantly destroys all bricks and triggers victory condition
 - **Reset Win Count**: Resets the win counter to 0 and removes from localStorage
 - **Reset BB Count**: Resets the Blocks Broken counter to 0
-- **1000 BB**: Instantly adds 1000 Blocks Broken for testing
+- **Reset Tickles**: Resets the Bricko tickles counter to 0
+- **+ 1000 BB**: Instantly adds 1000 Blocks Broken for testing
 - **Clear Upgrades**: Resets all upgrades to default state
 
 ### **Debug Panel Layout**
@@ -165,6 +212,7 @@ The game includes a comprehensive debug interface for testing and development:
 - Collision detection between ball, paddle, walls, and bricks
 - Dynamic speed adjustment based on score progression
 - Brick blinking system with 2-frame red flash effect
+- Multi-ball management with individual ball tracking
 
 ### **Storage System**
 - **localStorage Keys**:
@@ -175,6 +223,9 @@ The game includes a comprehensive debug interface for testing and development:
   - `brickBreakerBallCount`: Total balls owned
   - `brickBreakerHighScoreUnlocked`: High score display unlocked
   - `brickBreakerViewBalanceUnlocked`: Blocks Broken counter visible
+  - `brickBreakerBrickoVisible`: Bricko frame unlocked
+  - `brickBreakerBrickoTickles`: Total Bricko clicks
+  - `brickBreakerPeruseHintVisible`: Peruse hint visibility state
   - `brickBreakerBazaarUnlocked`: Bazaar access unlocked
 
 ### **Asset System**
@@ -188,6 +239,7 @@ The game includes a comprehensive debug interface for testing and development:
 - Responsive design that scales appropriately
 - Efficient brick state management with status tracking
 - Real-time button state updates based on BB count
+- Smooth animations with CSS transitions and transforms
 
 ## Development
 
@@ -197,3 +249,23 @@ Built with modern web technologies:
 - **Ruby/Sinatra** for web server
 - **CSS3** for styling, custom cursors, and button states
 - **localStorage** for persistent game state and progression
+
+## Recent Updates
+
+### **Game Fixes**
+- **DOM Loading**: Fixed game initialization to wait for DOM content to load
+- **Bazaar Alignment**: Resolved layout shifting and alignment issues with Bazaar panel
+- **Peruse Hint Logic**: Implemented proper localStorage-based visibility system
+- **Blocks Broken Display**: Fixed counter positioning and visibility in Bazaar
+
+### **New Features**
+- **Bricko Character**: Added interactive brick character with clickable animations
+- **Multi-Ball System**: Enhanced ball management with purchaseable extra balls
+- **Improved Controls**: Added A/D key support for paddle movement
+- **Enhanced Debug Panel**: Added Bricko tickles counter and reset functionality
+
+### **UI Improvements**
+- **Better Positioning**: Fixed all panel alignments and prevented layout shifts
+- **Smooth Animations**: Added "dotween" scaling effects for Bricko interactions
+- **Visual Feedback**: Enhanced button states and hover effects
+- **Persistent State**: Improved localStorage management for all game elements
