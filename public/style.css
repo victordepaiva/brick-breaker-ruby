@@ -1,0 +1,126 @@
+body {
+    margin: 0;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+  }
+  
+  canvas {
+    border: 2px solid #fff;
+    background: #000;
+  }
+  
+  #startBtn {
+    background: #09f;
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  #startBtn:hover {
+    background: #06c;
+  }
+  
+  #overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 480px;
+    height: 320px;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: sans-serif;
+    z-index: 10;
+  }
+  
+  #retryBtn {
+    background: #09f;
+    color: white;
+    font-size: 16px;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  #retryBtn:hover {
+    background: #06c;
+  }
+
+  body {
+    margin: 0;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  #startBtn {
+    background: #09f;
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  #startBtn:hover {
+    background: #06c;
+  }
+  
+  #gameContainer {
+    position: relative;
+    width: 480px;
+    height: 320px;
+  }
+  
+  canvas {
+    border: 2px solid #fff;
+    background: #000;
+    display: block;
+  }
+  
+  /* Overlay is now anchored to #gameContainer */
+  #overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 480px;
+    height: 320px;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: sans-serif;
+    z-index: 10;
+  }
+  
+  #retryBtn {
+    background: #09f;
+    color: white;
+    font-size: 16px;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  #retryBtn:hover {
+    background: #06c;
+  }
+  
