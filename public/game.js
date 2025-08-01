@@ -90,6 +90,9 @@ let ballCount = 1;            // Number of balls the player has (starts at 1)
 let ballsLost = 0;           // Number of balls lost in current game
 let highScoreUnlocked = false; // Whether the high score display is unlocked
 let viewBalanceUnlocked = false; // Whether the blocks broken counter is visible
+let brickoVisible = false; // Whether Bricko is unlocked and visible
+let brickoTickles = 0; // Number of times Bricko has been tickled
+let peruseHintVisible = false; // Whether the peruse hint should be visible
 
 // 🎮 Event Listeners - Listen for keyboard input to control the paddle
 document.addEventListener("keydown", keyDownHandler);
@@ -472,12 +475,64 @@ function loadBlocksBroken() {
   blocksBroken = savedBlocksBroken ? parseInt(savedBlocksBroken) : 0;
 }
 
+// 🧱 Bricko Tickles Counter Management
+function loadBrickoTickles() {
+  const savedBrickoTickles = localStorage.getItem('brickBreakerBrickoTickles');
+  brickoTickles = savedBrickoTickles ? parseInt(savedBrickoTickles) : 0;
+}
+
+function incrementBrickoTickles() {
+  brickoTickles++;
+  localStorage.setItem('brickBreakerBrickoTickles', brickoTickles.toString());
+  updateBrickoTicklesCounter();
+}
+
+function updateBrickoTicklesCounter() {
+  const debugBrickoTicklesElement = document.getElementById('debugBrickoTickles');
+  if (debugBrickoTicklesElement) {
+    debugBrickoTicklesElement.textContent = "Bricko Tickles: " + brickoTickles;
+  }
+}
+
+function handleBrickoClick() {
+  // Increment the tickles counter
+  incrementBrickoTickles();
+  
+  // Increment the blocks broken counter
+  incrementBlocksBroken();
+  
+  // Make the brick blink red
+  const brickoBrick = document.getElementById('brickoBrick');
+  if (brickoBrick) {
+    brickoBrick.classList.add('blinking');
+    
+    // Remove the blinking class after one frame (16ms)
+    setTimeout(() => {
+      brickoBrick.classList.remove('blinking');
+    }, 16);
+    
+    // Dotween animation - scale up then back down
+    const currentScale = brickoBrick.style.transform ? parseFloat(brickoBrick.style.transform.match(/scale\(([^)]+)\)/)?.[1] || 1) : 1;
+    const maxScale = 1.3; // Maximum scale threshold
+    const targetScale = Math.min(currentScale * 1.1, maxScale); // 10% larger, but capped at 1.3x
+    
+    // Scale up
+    brickoBrick.style.transform = `scale(${targetScale})`;
+    
+    // Scale back down after 150ms
+    setTimeout(() => {
+      brickoBrick.style.transform = `scale(${currentScale})`;
+    }, 150);
+  }
+}
+
 function incrementBlocksBroken() {
   blocksBroken++;
   localStorage.setItem('brickBreakerBlocksBroken', blocksBroken.toString());
   updateBlocksBrokenCounter();
   updateViewBalanceButton();
   updateHighScoreButton();
+  updateBrickoButton();
   updateExtraBallButton();
   checkBazaarUnlock();
 }
@@ -499,12 +554,20 @@ function loadUpgrades() {
   
   const savedViewBalanceUnlocked = localStorage.getItem('brickBreakerViewBalanceUnlocked');
   viewBalanceUnlocked = savedViewBalanceUnlocked === 'true';
+  
+  const savedBrickoVisible = localStorage.getItem('brickBreakerBrickoVisible');
+  brickoVisible = savedBrickoVisible === 'true';
+  
+  const savedPeruseHintVisible = localStorage.getItem('brickBreakerPeruseHintVisible');
+  peruseHintVisible = savedPeruseHintVisible === 'true';
 }
 
 function saveUpgrades() {
   localStorage.setItem('brickBreakerBallCount', ballCount.toString());
   localStorage.setItem('brickBreakerHighScoreUnlocked', highScoreUnlocked.toString());
   localStorage.setItem('brickBreakerViewBalanceUnlocked', viewBalanceUnlocked.toString());
+  localStorage.setItem('brickBreakerBrickoVisible', brickoVisible.toString());
+  localStorage.setItem('brickBreakerPeruseHintVisible', peruseHintVisible.toString());
 }
 
 function buyViewBalance() {
@@ -536,6 +599,19 @@ function buyHighScore() {
     } else {
       initialRender();
     }
+  }
+}
+
+function buyBricko() {
+  if (blocksBroken >= 160) {
+    blocksBroken -= 160;
+    brickoVisible = true;
+    
+    localStorage.setItem('brickBreakerBlocksBroken', blocksBroken.toString());
+    saveUpgrades();
+    updateBlocksBrokenCounter();
+    updateBrickoButton();
+    updateBrickoVisibility();
   }
 }
 
@@ -607,6 +683,38 @@ function updateHighScoreButton() {
   }
 }
 
+function updateBrickoButton() {
+  const brickoBtn = document.getElementById('brickoBtn');
+  if (brickoBtn) {
+    if (blocksBroken >= 150 && !brickoVisible) {
+      brickoBtn.style.display = 'block';
+      // Add purchasable class if player has enough BB
+      if (blocksBroken >= 160) {
+        brickoBtn.classList.add('purchasable');
+      } else {
+        brickoBtn.classList.remove('purchasable');
+      }
+    } else {
+      brickoBtn.style.display = 'none';
+      brickoBtn.classList.remove('purchasable');
+    }
+  }
+}
+
+function updateBrickoVisibility() {
+  const newFrame = document.getElementById('newFrame');
+  if (newFrame) {
+    newFrame.style.display = brickoVisible ? 'flex' : 'none';
+  }
+}
+
+function updatePeruseHintVisibility() {
+  const peruseHint = document.getElementById('peruseHint');
+  if (peruseHint) {
+    peruseHint.style.display = peruseHintVisible ? 'block' : 'none';
+  }
+}
+
 function updateExtraBallButton() {
   const extraBallBtn = document.getElementById('extraBallBtn');
   if (extraBallBtn) {
@@ -630,6 +738,8 @@ function clearUpgrades() {
   ballCount = 1;
   highScoreUnlocked = false;
   viewBalanceUnlocked = false;
+  brickoVisible = false;
+  peruseHintVisible = false;
   bazaarUnlocked = false;
   localStorage.removeItem('brickBreakerBazaarUnlocked');
   saveUpgrades();
@@ -637,6 +747,9 @@ function clearUpgrades() {
   updateExtraBallButton();
   updateHighScoreButton();
   updateViewBalanceButton();
+  updateBrickoButton();
+  updateBrickoVisibility();
+  updatePeruseHintVisibility();
   updateBazaarBlocksBrokenVisibility();
   updateBazaarTipIndicator();
   hideBazaarHint();
@@ -671,6 +784,13 @@ function checkBazaarUnlock() {
     showBazaarHint();
     updateBazaarTipIndicator();
   }
+  
+  // Check for peruse hint unlock
+  if (blocksBroken >= 50 && !peruseHintVisible) {
+    peruseHintVisible = true;
+    localStorage.setItem('brickBreakerPeruseHintVisible', 'true');
+    updatePeruseHintVisibility();
+  }
 }
 
 function showBazaarHint() {
@@ -701,6 +821,7 @@ loadRecord();
 loadTimesPlayed();
 loadWins();
 loadBlocksBroken();
+loadBrickoTickles();
 loadUpgrades();
 loadBazaarStatus();
 
@@ -712,11 +833,15 @@ for (let i = 0; i < ballCount; i++) {
 updateWinCounter();
 updatePlayCounter();
 updateActiveBallsCounter();
+updateBrickoTicklesCounter();
 updateBazaarBallsCounter();
 updateBlocksBrokenCounter();
 updateExtraBallButton();
 updateHighScoreButton();
 updateViewBalanceButton();
+updateBrickoButton();
+updateBrickoVisibility();
+updatePeruseHintVisibility();
 updateBazaarBlocksBrokenVisibility();
 updateBazaarTipIndicator();
 checkBazaarUnlock();
@@ -895,6 +1020,12 @@ function resetBlocksBrokenCount() {
   updateBlocksBrokenCounter();
 }
 
+function resetTicklesCount() {
+  brickoTickles = 0;
+  localStorage.removeItem('brickBreakerBrickoTickles');
+  updateBrickoTicklesCounter();
+}
+
 // 🎮 Debug event listeners
 document.addEventListener("keydown", (e) => {
   if (e.key === "'" || e.key === "'") {
@@ -926,9 +1057,14 @@ document.getElementById("clearRecordBtn").addEventListener("click", clearRecord)
 document.getElementById("forceWinBtn").addEventListener("click", forceWin);
 document.getElementById("resetWinCountBtn").addEventListener("click", resetWinCount);
 document.getElementById("resetBBCountBtn").addEventListener("click", resetBlocksBrokenCount);
+document.getElementById("resetTicklesBtn").addEventListener("click", resetTicklesCount);
 document.getElementById("add1000BBBtn").addEventListener("click", add1000BB);
 document.getElementById("clearUpgradesBtn").addEventListener("click", clearUpgrades);
 document.getElementById("extraBallBtn").addEventListener("click", buyExtraBall);
 document.getElementById("highScoreBtn").addEventListener("click", buyHighScore);
 document.getElementById("viewBalanceBtn").addEventListener("click", buyViewBalance);
+document.getElementById("brickoBtn").addEventListener("click", buyBricko);
+
+// Bricko brick event listener
+document.getElementById("brickoBrick").addEventListener("click", handleBrickoClick);
   

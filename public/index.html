@@ -12,17 +12,20 @@
     <div class="game-wrapper">
       <div id="debugElement">
         <div id="debugHeader">Debug Panel</div>
+        <div id="debugHeaderSeparator"></div>
                                            <div id="debugContent">
                                           <div id="debugWins">Wins: 0</div>
                      <div id="debugTimesPlayed">Times Played: 0</div>
                      <div id="debugActiveBalls">Active Balls: 1</div>
                      <div id="debugBazaarTip">Bazaar Tip: False</div>
+                     <div id="debugBrickoTickles">Bricko Tickles: 0</div>
                      <div id="debugSeparator"></div>
                      <div id="debugButtons">
             <button id="clearRecordBtn">Clear Record</button>
             <button id="forceWinBtn">Force Win</button>
             <button id="resetWinCountBtn">Reset Win Count</button>
             <button id="resetBBCountBtn">Reset BB Count</button>
+            <button id="resetTicklesBtn">Reset Tickles</button>
             <button id="add1000BBBtn">+ 1000 BB</button>
             <button id="clearUpgradesBtn">Clear Upgrades</button>
           </div>
@@ -42,19 +45,30 @@
         </div>
 
       </div>
-      <div id="bazaarElement">
-        <div id="bazaarHeader">Bazaar</div>
-                                            <div id="bazaarContent">
-                                            <button id="viewBalanceBtn" style="display: none;">View Balance (75 BB)</button>
-                     <button id="highScoreBtn" style="display: none;">High Score (120 BB)</button>
-                                            <button id="extraBallBtn" style="display: none;">Extra Ball (1000 BB)</button>
-                     <div id="bazaarSeparator" style="display: none;"></div>
-                     <div id="bazaarBalls">Balls: 1</div>
-                     <div id="bazaarBlocksBroken" style="display: none;">Blocks Broken:<br>0</div>
-                   </div>
-      </div>
-      <button id="startBtn">Start Game</button>
-      <div id="bazaarHint" style="display: none;">press E to peruse</div>
+                  <div id="bazaarElement">
+              <div id="bazaarHeader">Bazaar</div>
+              <div id="bazaarContent">
+                <button id="viewBalanceBtn" style="display: none;">View Balance (75 BB)</button>
+                <button id="highScoreBtn" style="display: none;">High Score (120 BB)</button>
+                <button id="brickoBtn" style="display: none;">Bricko (160 BB)</button>
+                <button id="extraBallBtn" style="display: none;">Extra Ball (1000 BB)</button>
+                <div id="bazaarSeparator" style="display: none;"></div>
+                <div id="bazaarBalls">Balls: 1</div>
+                <div id="bazaarBlocksBroken" style="display: none;">Blocks Broken:<br>0</div>
+                
+              </div>
+            </div>
+             
+            <div id="newFrame" style="display: none;">
+              <div id="newFrameHeader">Bricko</div>
+              <div id="newFrameContent">
+                <div id="brickoBrick"></div>
+              </div>
+            </div>
+            <button id="startBtn">Start Game</button>
+          </div>
+                      <div id="controlsHint">a-d / ← → move paddle | spacebar start/retry</div>
+            <div id="peruseHint" style="display: none;">press E to peruse</div>
     </div>
   
     <script src="game.js"></script>
