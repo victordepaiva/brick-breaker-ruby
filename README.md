@@ -11,13 +11,12 @@ A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/
 - **Record System**: Persistent high score storage using localStorage
 - **Brick Blinking Effect**: Bricks flash red for 2 frames when hit before disappearing
 - **Game States**: Start screen, countdown, gameplay, and game over with retry
-- **Win/Lose Conditions**: Win by destroying all 300 bricks, lose if all balls are lost
+- **Win/Lose Conditions**: Win by destroying all 300 bricks, lose if ball passes paddle
 - **Custom Cursors**: Unique cursor designs for default and clickable elements
 - **Modern UI**: Dark theme with Work Sans typography and smooth animations
 - **Responsive Design**: Large 960x640 canvas with optimized game elements
 - **Debug Panel**: Comprehensive debug interface with statistics and testing tools
 - **Bazaar System**: Advanced upgrade shop with progression-based unlocks
-- **Multi-Ball System**: Purchase additional balls to increase chances of winning
 - **Progression Mechanics**: Blocks Broken currency system with persistent upgrades
 
 ## Architecture
@@ -71,12 +70,6 @@ brick-breaker-ruby/
   - Bricks 20-29: Speed = 1.7
   - And so on...
 
-### **Multi-Ball System**
-- **Default**: Start with 1 ball
-- **Extra Balls**: Purchase additional balls for 1000 Blocks Broken each
-- **Loss Condition**: Game ends when all balls are lost (not just one)
-- **Ball Management**: All balls move independently with individual physics
-
 ### **Controls**
 - **Left Arrow / A**: Move paddle left
 - **Right Arrow / D**: Move paddle right
@@ -104,19 +97,19 @@ The game features an advanced upgrade shop system with progression-based unlocks
 
 ### **Upgrade Progression**
 
-#### **View Balance (50 BB)**
+#### **View Balance (75 BB)**
 - **Appears at**: 50 Blocks Broken
 - **Cost**: 75 Blocks Broken
 - **Effect**: Permanently reveals Blocks Broken counter in Bazaar
 - **Type**: One-time purchase
 
-#### **High Score Display (80 BB)**
+#### **High Score Display (120 BB)**
 - **Appears at**: 80 Blocks Broken
 - **Cost**: 120 Blocks Broken
 - **Effect**: Unlocks Record display in top-right corner of game
 - **Type**: One-time purchase
 
-#### **Extra Ball (500 BB)**
+#### **Extra Ball (1000 BB)**
 - **Appears at**: 500 Blocks Broken
 - **Cost**: 1000 Blocks Broken
 - **Effect**: Adds +1 ball to your total ball count
@@ -172,7 +165,6 @@ The game includes a comprehensive debug interface for testing and development:
 - Collision detection between ball, paddle, walls, and bricks
 - Dynamic speed adjustment based on score progression
 - Brick blinking system with 2-frame red flash effect
-- Multi-ball physics with independent ball movement
 
 ### **Storage System**
 - **localStorage Keys**:
