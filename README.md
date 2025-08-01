@@ -19,18 +19,21 @@ A classic Brick Breaker/Breakout-style [unfolding game](https://www.youtube.com/
 - **Physics Engine**: Realistic ball movement with collision detection and wall bouncing
 - **Progressive Difficulty**: Ball speed increases by 0.1 every 10 bricks destroyed
 - **Scoring System**: Points awarded for each brick destroyed (300 total bricks)
-- **Record System**: Persistent high score storage using localStorage
 - **Brick Blinking Effect**: Bricks flash red for 2 frames when hit before disappearing
 - **Game States**: Start screen, countdown, gameplay, and game over with retry
-- **Win/Lose Conditions**: Win by destroying all 300 bricks, lose when last ball hits bottom
+- **Win/Lose Conditions**: Win by destroying all 300 bricks, lose when last ball hits
+- <details>
+  <summary>**Unlockables (Spoiler)** - click to expand</summary>
+  - **Bazaar System**: Advanced upgrade shop with progression-based unlocks
+  - **Progression Mechanics**: Blocks Broken currency system with persistent upgrades
+  - **Record System**: Persistent high score storage using localStorage
+  - **Bricko**: Interactive Bricko (rewarding)
+  - **Multi-Ball System**: Purchase additional balls
+</details>
 - **Custom Cursors**: Unique cursor designs for default and clickable elements
 - **Modern UI**: Dark theme with Work Sans typography and smooth animations
 - **Responsive Design**: Large 960x640 canvas with optimized game elements
 - **Debug Panel**: Comprehensive debug interface with statistics and testing tools
-- **Bazaar System**: Advanced upgrade shop with progression-based unlocks
-- **Progression Mechanics**: Blocks Broken currency system with persistent upgrades
-- **Bricko Feature**: Interactive brick character with clickable animations and rewards
-- **Multi-Ball System**: Purchase additional balls to increase chances of winning
 
 ## Architecture
 
@@ -109,9 +112,10 @@ The game features an advanced upgrade shop system with progression-based unlocks
 - **Access Method**: Press 'E' key to toggle Bazaar visibility
 - **Hint System**: "press E to peruse" appears at bottom-right when unlocked (permanently visible after 50 BB)
 
-### **Upgrade Progression**
-
-#### **View Balance (75 BB)**
+<details>
+  <summary>**## Upgrade Progression (Spoiler)** - click to expand</summary>
+  
+  #### **View Balance (75 BB)**
 - **Appears at**: 50 Blocks Broken
 - **Cost**: 75 Blocks Broken
 - **Effect**: Permanently reveals Blocks Broken counter in Bazaar
@@ -170,6 +174,10 @@ A unique interactive element that adds personality to the game:
 - **Reset Tickles**: Debug button to reset Bricko tickle counter
 - **Persistence**: Tickles count saved across game sessions
 - **Upgrade Integration**: Bricko frame only visible after purchasing the upgrade
+
+</details>**Unlockables (Spoiler)**:
+### **Upgrade Progression**
+
 
 ## Debug Panel
 
